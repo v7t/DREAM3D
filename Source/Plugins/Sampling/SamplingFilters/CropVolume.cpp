@@ -164,8 +164,6 @@ void CropVolume::dataCheck()
   AttributeMatrix::Pointer cellAttrMat = srcCellDataContainer->getAttributeMatrix(getCellAttributeMatrixPath().getAttributeMatrixName());
   VolumeDataContainer* destCellDataContainer = srcCellDataContainer;
 
-  IDataArray::Pointer da1 = cellAttrMat->getAttributeArray(cellAttrMat->getAttributeArrayNameList()[0]);
-
   if (m_SaveAsNewDataContainer == true)
   {
       float ox = 0.0f, oy = 0.0f, oz = 0.0f, rx = 0.0f, ry = 0.0f, rz = 0.0f;
