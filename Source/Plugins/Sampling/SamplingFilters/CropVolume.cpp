@@ -165,16 +165,19 @@ void CropVolume::dataCheck()
     return;
   }
 
-  AttributeMatrix::Pointer cellAttrMat = srcCellDataContainer->getAttributeMatrix(getCellAttributeMatrixPath().getAttributeMatrixName());
-  if(NULL == cellAttrMat.get())
+  AttributeMatrix::Pointer srcCellAttrMat = srcCellDataContainer->getAttributeMatrix(getCellAttributeMatrixPath().getAttributeMatrixName());
+
+  // Bail if the source attribute matrix cannot be found
+  if (NULL == srcCellAttrMat)
   {
-    QString ss = QObject::tr("The prerequisite AttributeMatrix '%1' does not exist").arg(getCellAttributeMatrixPath().getAttributeMatrixName());
+    QString ss = QObject::tr("The prerequisite Attribute Matrix '%1' could not be found").arg(getCellAttributeMatrixPath().getAttributeMatrixName());
     setErrorCondition(-5549);
     notifyErrorMessage(getHumanLabel(), ss, getErrorCondition());
     return;
   }
 
   VolumeDataContainer* destCellDataContainer = srcCellDataContainer;
+  AttributeMatrix::Pointer destCellAttrMat;
 
   if (m_SaveAsNewDataContainer == true)
   {
@@ -194,12 +197,15 @@ void CropVolume::dataCheck()
     destCellDataContainer->setResolution(rx, ry, rz);
     destCellDataContainer->setDimensions(dx, dy, dz);
 
-    AttributeMatrix::Pointer cellAttrMatCopy = cellAttrMat->deepCopy();
-    destCellDataContainer->addAttributeMatrix(cellAttrMatCopy->getName(), cellAttrMatCopy);
-    cellAttrMat = destCellDataContainer->getAttributeMatrix(getCellAttributeMatrixPath().getAttributeMatrixName());
+      destCellAttrMat = srcCellAttrMat->deepCopy();
+      destCellDataContainer->addAttributeMatrix(destCellAttrMat->getName(), destCellAttrMat);
+  }
+  else
+  {
+    destCellAttrMat = srcCellAttrMat;
   }
 
-  if(NULL == destCellDataContainer || NULL == cellAttrMat || getErrorCondition() < 0)
+  if(NULL == destCellDataContainer || NULL == destCellAttrMat || getErrorCondition() < 0)
   {
     return;
   }
@@ -286,9 +292,9 @@ void CropVolume::dataCheck()
     return;
   }
 
-  cellAttrMat->setTupleDimensions(tDims);
+  destCellAttrMat->setTupleDimensions(tDims);
 
-  if(getErrorCondition() < 0 || NULL == cellAttrMat) { return; }
+  if(getErrorCondition() < 0 || NULL == destCellAttrMat) { return; }
 
   if(m_RenumberFeatures == true)
   {
