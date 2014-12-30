@@ -393,6 +393,7 @@ void CropVolume::execute()
                              " This may lead to junk data being filled into the extra space.").arg(m_XMax).arg(dims[0]);
     setErrorCondition(-950);
     notifyErrorMessage(getHumanLabel(), ss, getErrorCondition());
+    return;
   }
   if (dims[1] <= m_YMax)
   {
@@ -401,6 +402,7 @@ void CropVolume::execute()
                              " This may lead to junk data being filled into the extra space.").arg(m_YMax).arg(dims[1]);
     setErrorCondition(-951);
     notifyErrorMessage(getHumanLabel(), ss, getErrorCondition());
+    return;
   }
   if (dims[2] <= m_ZMax)
   {
@@ -409,6 +411,7 @@ void CropVolume::execute()
                              " This may lead to junk data being filled into the extra space.").arg(m_ZMax).arg(dims[2]);
     setErrorCondition(-952);
     notifyErrorMessage(getHumanLabel(), ss, getErrorCondition());
+    return;
   }
 
   int64_t XP = ( (m_XMax - m_XMin) + 1 );
@@ -489,6 +492,7 @@ void CropVolume::execute()
       {
         setErrorCondition(-601);
         QString ss = QObject::tr("The total number of features from %1 is %2, but a value of %3 was found in Data Array %4.").arg(cellFeatureAttrMat->getName()).arg(totalFeatures).arg(currentFeatureId).arg(getFeatureIdsArrayPath().serialize("/"));
+        qDebug() << ss;
         notifyErrorMessage(getHumanLabel(), ss, getErrorCondition());
         return;
       }
