@@ -338,7 +338,7 @@ void  EstablishMatrixPhase::establish_matrix()
         tDims[0] = (firstMatrixFeature + j) + 1;
         m->getAttributeMatrix(m_OutputCellFeatureAttributeMatrixName)->resizeAttributeArrays(tDims);
         updateFeatureInstancePointers();
-        m_NumFeatures[j] = 1;
+        m_NumFeatures[firstMatrixFeature + j] = 1;
       }
       m_FeatureIds[i] = (firstMatrixFeature + j);
       m_CellPhases[i] = matrixphases[j];

@@ -111,7 +111,7 @@ GenerateEnsembleStatistics::GenerateEnsembleStatistics()  :
   m_SurfaceFeatures(NULL),
   m_FeaturePhases(NULL),
   m_AxisEulerAngles(NULL),
-  //m_RadialDistFunc(NULL),
+  m_RadialDistFunc(NULL),
   m_Omega3s(NULL),
   m_AspectRatios(NULL),
   m_EquivalentDiameters(NULL),
@@ -168,10 +168,10 @@ void GenerateEnsembleStatistics::setupFilterParameters()
   parameters.push_back(DataArraySelectionFilterParameter::New("Neighbor List", "NeighborListArrayPath", getNeighborListArrayPath(), FilterParameter::RequiredArray));
 
   QStringList linkedProps;
-  //linkedProps << "RDFArrayPath" << "MaxMinRDFArrayPath";
-  //parameters.push_back(LinkedBooleanFilterParameter::New("Include Radial Distribution Function", "IncludeRadialDistFunc", getIncludeRadialDistFunc(), linkedProps, FilterParameter::Parameter));
-  //parameters.push_back(DataArraySelectionFilterParameter::New("Radial Distribution Function", "RDFArrayPath", getRDFArrayPath(), FilterParameter::RequiredArray));
-  //parameters.push_back(DataArraySelectionFilterParameter::New("Max and Min Separation Distances", "MaxMinRDFArrayPath", getMaxMinRDFArrayPath(), FilterParameter::RequiredArray));
+  linkedProps << "RDFArrayPath" << "MaxMinRDFArrayPath";
+  parameters.push_back(LinkedBooleanFilterParameter::New("Include Radial Distribution Function", "IncludeRadialDistFunc", getIncludeRadialDistFunc(), linkedProps, FilterParameter::Parameter));
+  parameters.push_back(DataArraySelectionFilterParameter::New("Radial Distribution Function", "RDFArrayPath", getRDFArrayPath(), FilterParameter::RequiredArray));
+  parameters.push_back(DataArraySelectionFilterParameter::New("Max and Min Separation Distances", "MaxMinRDFArrayPath", getMaxMinRDFArrayPath(), FilterParameter::RequiredArray));
 
   linkedProps.clear();
   linkedProps << "SizeDistributionFitType" << "BiasedFeaturesArrayPath" << "EquivalentDiametersArrayPath";
@@ -231,8 +231,8 @@ void GenerateEnsembleStatistics::readFilterParameters(AbstractFilterParametersRe
   setCrystalStructuresArrayPath(reader->readDataArrayPath("CrystalStructuresArrayPath", getCrystalStructuresArrayPath() ) );
   setAxisEulerAnglesArrayPath(reader->readDataArrayPath("AxisEulerAnglesArrayPath", getAxisEulerAnglesArrayPath() ) );
   setOmega3sArrayPath(reader->readDataArrayPath("Omega3sArrayPath", getOmega3sArrayPath() ) );
-  //setRDFArrayPath(reader->readDataArrayPath("RDFArrayPath", getRDFArrayPath()));
-  //setMaxMinRDFArrayPath(reader->readDataArrayPath("MaxMinRDFArrayPath", getMaxMinRDFArrayPath()));
+  setRDFArrayPath(reader->readDataArrayPath("RDFArrayPath", getRDFArrayPath()));
+  setMaxMinRDFArrayPath(reader->readDataArrayPath("MaxMinRDFArrayPath", getMaxMinRDFArrayPath()));
   setAspectRatiosArrayPath(reader->readDataArrayPath("AspectRatiosArrayPath", getAspectRatiosArrayPath() ) );
   setNeighborhoodsArrayPath(reader->readDataArrayPath("NeighborhoodsArrayPath", getNeighborhoodsArrayPath() ) );
   setSharedSurfaceAreaListArrayPath(reader->readDataArrayPath("SharedSurfaceAreaListArrayPath", getSharedSurfaceAreaListArrayPath()));
@@ -281,8 +281,8 @@ int GenerateEnsembleStatistics::writeFilterParameters(AbstractFilterParametersWr
   DREAM3D_FILTER_WRITE_PARAMETER(CrystalStructuresArrayPath)
   DREAM3D_FILTER_WRITE_PARAMETER(AxisEulerAnglesArrayPath)
   DREAM3D_FILTER_WRITE_PARAMETER(Omega3sArrayPath)
-  //DREAM3D_FILTER_WRITE_PARAMETER(RDFArrayPath)
-  //DREAM3D_FILTER_WRITE_PARAMETER(MaxMinRDFArrayPath)
+  DREAM3D_FILTER_WRITE_PARAMETER(RDFArrayPath)
+  DREAM3D_FILTER_WRITE_PARAMETER(MaxMinRDFArrayPath)
   DREAM3D_FILTER_WRITE_PARAMETER(AspectRatiosArrayPath)
   DREAM3D_FILTER_WRITE_PARAMETER(NeighborhoodsArrayPath)
   DREAM3D_FILTER_WRITE_PARAMETER(NeighborListArrayPath)
@@ -383,20 +383,20 @@ void GenerateEnsembleStatistics::dataCheck()
     if(getErrorCondition() >= 0) { dataArrayPaths.push_back(getAxisEulerAnglesArrayPath()); }
   }
 
-//  if (m_IncludeRadialDistFunc == true)
-//  {
-//    DataArray<float>::Pointer tempPtr = getDataContainerArray()->getPrereqIDataArrayFromPath<DataArray<float>, AbstractFilter>(this, getRDFArrayPath());
-//    if (NULL != tempPtr.get())
-//    {
-//      m_RadialDistFuncPtr = tempPtr;
-//      m_RadialDistFunc = tempPtr->getPointer(0);
-//    }
+  if (m_IncludeRadialDistFunc == true)
+  {
+    DataArray<float>::Pointer tempPtr = getDataContainerArray()->getPrereqIDataArrayFromPath<DataArray<float>, AbstractFilter>(this, getRDFArrayPath());
+    if (NULL != tempPtr.get())
+    {
+      m_RadialDistFuncPtr = tempPtr;
+      m_RadialDistFunc = tempPtr->getPointer(0);
+    }
 
-//    cDims[0] = 2;
-//    m_MaxMinRadialDistFuncPtr = getDataContainerArray()->getPrereqArrayFromPath<DataArray<float>, AbstractFilter>(this, getMaxMinRDFArrayPath(), cDims); /* Assigns the shared_ptr<> to an instance variable that is a weak_ptr<> */
-//    if( NULL != m_MaxMinRadialDistFuncPtr.lock().get() ) /* Validate the Weak Pointer wraps a non-NULL pointer to a DataArray<T> object */
-//    { m_MaxMinRadialDistFunc = m_MaxMinRadialDistFuncPtr.lock()->getPointer(0); } /* Now assign the raw pointer to data from the DataArray<T> object */
-//  }
+    cDims[0] = 2;
+    m_MaxMinRadialDistFuncPtr = getDataContainerArray()->getPrereqArrayFromPath<DataArray<float>, AbstractFilter>(this, getMaxMinRDFArrayPath(), cDims); /* Assigns the shared_ptr<> to an instance variable that is a weak_ptr<> */
+    if( NULL != m_MaxMinRadialDistFuncPtr.lock().get() ) /* Validate the Weak Pointer wraps a non-NULL pointer to a DataArray<T> object */
+    { m_MaxMinRadialDistFunc = m_MaxMinRadialDistFuncPtr.lock()->getPointer(0); } /* Now assign the raw pointer to data from the DataArray<T> object */
+  }
 
   if (m_CalculateODF == true || m_CalculateMDF == true)
   {
@@ -1096,7 +1096,7 @@ void GenerateEnsembleStatistics::gatherAxisODFStats()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-#if 0
+//#if 0
 void GenerateEnsembleStatistics::gatherRadialDistFunc()
 {
   StatsDataArray& statsDataArray = *(m_StatsDataArray);
@@ -1133,7 +1133,7 @@ void GenerateEnsembleStatistics::gatherRadialDistFunc()
     }
   }
 }
-#endif
+//#endif
 
 // -----------------------------------------------------------------------------
 //
@@ -1283,10 +1283,10 @@ void GenerateEnsembleStatistics::execute()
   {
     gatherAxisODFStats();
   }
-//  if(m_IncludeRadialDistFunc == true)
-//  {
-//    gatherRadialDistFunc();
-//  }
+  if(m_IncludeRadialDistFunc == true)
+  {
+    gatherRadialDistFunc();
+  }
 
   calculatePPTBoundaryFrac();
 

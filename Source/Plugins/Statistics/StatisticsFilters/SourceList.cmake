@@ -16,6 +16,7 @@ set(_PublicFilters
   FindBoundaryElementFractions
   FindDifferenceMap
   FindEuclideanDistMap
+  FindFeatureClustering
   FindLargestCrossSections
   FindNeighborhoods
   FindNeighbors
