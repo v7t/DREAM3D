@@ -79,7 +79,7 @@ WriteStatsGenOdfAngleFile::WriteStatsGenOdfAngleFile() :
   m_OutputFile(""),
   m_CellPhasesArrayPath("", "", ""),
   m_CellEulerAnglesArrayPath("", "", ""),
-  m_ConvertToDegrees(true),
+  m_ConvertToDegrees(false),
   m_UseGoodVoxels(false),
   m_GoodVoxelsArrayPath("", "", "")
 {
@@ -291,8 +291,7 @@ int WriteStatsGenOdfAngleFile::determineOutputLineCount(int64_t totalPoints, int
   {
     countLine = false;
 
-    if(m_UseGoodVoxels == true && m_GoodVoxels[i] == true) { countLine = true; }
-    if(m_CellPhases[i] == phase) { countLine = true; }
+    if(m_UseGoodVoxels == true && m_GoodVoxels[i] == true && m_CellPhases[i] == phase) { countLine = true; }
 
     if(countLine == true)
     {
@@ -323,8 +322,7 @@ int WriteStatsGenOdfAngleFile::writeOutputFile(QTextStream& out, int32_t lineCou
   {
     writeLine = false;
 
-    if(m_UseGoodVoxels == true && m_GoodVoxels[i] == true) { writeLine = true; }
-    if(m_CellPhases[i] == phase) { writeLine = true; }
+    if(m_UseGoodVoxels == true && m_GoodVoxels[i] == true && m_CellPhases[i] == phase) { writeLine = true; }
 
     if(writeLine == true)
     {
