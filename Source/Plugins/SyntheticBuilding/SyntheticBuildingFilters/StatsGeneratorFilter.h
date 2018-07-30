@@ -37,7 +37,7 @@
 
 #include "SIMPLib/Common/SIMPLibSetGetMacros.h"
 #include "SIMPLib/DataArrays/StatsDataArray.h"
-#include "SIMPLib/DataArrays/StringDataArray.hpp"
+#include "SIMPLib/DataArrays/StringDataArray.h"
 #include "SIMPLib/Filtering/AbstractFilter.h"
 #include "SIMPLib/SIMPLib.h"
 
@@ -161,13 +161,13 @@ public:
    * @brief readFilterParameters
    * @param obj
    */
-  virtual void readFilterParameters(QJsonObject& obj);
+  void readFilterParameters(QJsonObject& obj) override;
 
   /**
    * @brief writeFilterParametersToJson Writes the filter parameters to a file
    * @param root The root json object
    */
-  virtual void writeFilterParameters(QJsonObject& obj);
+  void writeFilterParameters(QJsonObject& obj) const override;
 
   /**
    * @brief execute Reimplemented from @see AbstractFilter class
