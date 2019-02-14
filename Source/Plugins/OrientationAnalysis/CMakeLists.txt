@@ -219,6 +219,16 @@ PluginProperties(TARGET_NAME ${plug_target_name}
                 INSTALL_DEST "${${plug_target_name}_install_dest}"
 )
 
+if(WIN32)
+target_link_libraries(${plug_target_name}
+                    Qt5::Core
+                    Qt5::Gui
+                    SIMPLib
+                    EbsdLib
+                    OrientationLib
+                    libharu::hpdf#libhpdf
+)
+else()
 target_link_libraries(${plug_target_name}
                     Qt5::Core
                     Qt5::Gui
@@ -227,6 +237,7 @@ target_link_libraries(${plug_target_name}
                     OrientationLib
                     libharu::hpdf
 )
+endif()
 
 
 
